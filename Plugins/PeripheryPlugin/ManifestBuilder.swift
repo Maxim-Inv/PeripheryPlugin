@@ -34,7 +34,7 @@ struct ManifestBuilder {
 }
 
 private extension ManifestBuilder {
-    // Align to https://github.com/swiftty/XcodeGenBinary/blob/main/Plugins/XcodeGenPlugin/XcodeGenPlugin.swift
+    // Align to https://github.com/peripheryapp/periphery/blob/master/Sources/PeripheryKit/SPM/SPM.swift
     struct Package: Encodable {
         let name: String
         let path: String
