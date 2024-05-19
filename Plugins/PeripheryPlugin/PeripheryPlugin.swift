@@ -3,17 +3,31 @@ import PackagePlugin
 
 @main
 struct PeripheryPlugin: CommandPlugin {
-    func performCommand(context: PluginContext, arguments: [String]) async throws {
+    func perform(context: AnyPluginContext, arguments: [String], isPackage: Bool) throws {
         var extractor = ArgumentExtractor(arguments)
 
         let names = extractor.extractOption(named: "target")
-        let targets = try context.package.targets(named: names)
+        let targets = try context.targets(named: names)
 
         guard !targets.isEmpty else { return }
 
         let manifestPath = context.pluginWorkDirectory.appending("PeripheryPlugin_Manifest.json")
-        let manifestBuilder = ManifestBuilder(package: context.package, targets: targets)
-        try manifestBuilder.build(path: manifestPath.string)
+
+        if isPackage {
+            let manifest = try context.exec(tool: "swift") { arguments in
+                arguments.append("package")
+                arguments.append("describe")
+                arguments.append("--type")
+                arguments.append("json")
+            }
+
+            guard !manifest.result.isEmpty else {
+                Diagnostics.error("Failed to perform `swift package describe`, try to restart Xcode")
+                return
+            }
+
+            try manifest.result.write(toFile: manifestPath.string, atomically: true, encoding: .utf8)
+        }
 
         let dataStore = context.pluginWorkDirectory
             .removingLastComponent()
@@ -23,6 +37,18 @@ struct PeripheryPlugin: CommandPlugin {
 
         let output = try context.exec(tool: "periphery") { arguments in
             arguments.append("scan")
+
+            if isPackage {
+                arguments.append("--json-package-manifest-path")
+                arguments.append(manifestPath)
+            } else {
+                arguments.append("--project")
+                arguments.append(context.directory.appending(context.displayName + ".xcodeproj"))
+                arguments.append("--schemes")
+                arguments.append(contentsOf: names)
+                arguments.append("--skip-schemes-validation")
+            }
+
             arguments.append("--targets")
             arguments.append(contentsOf: names)
             arguments.append("--skip-build")
@@ -30,15 +56,15 @@ struct PeripheryPlugin: CommandPlugin {
             arguments.append(dataStore)
             arguments.append("--format")
             arguments.append("xcode")
+
+            // Configuration
             arguments.append("--retain-public")
             arguments.append("--disable-redundant-public-analysis")
-            arguments.append("--json-package-manifest-path")
-            arguments.append(manifestPath)
         }
 
         for target in targets {
             let path = context.pluginWorkDirectory.removingLastComponent().appending(
-                context.package.id + ".output",
+                context.id + ".output",
                 target.name,
                 "PeripheryRendererPlugin"
             )
@@ -46,6 +72,7 @@ struct PeripheryPlugin: CommandPlugin {
             try FileManager.default.createDirectory(atPath: path.string, withIntermediateDirectories: true)
 
             let string = output
+                .result
                 .components(separatedBy: "\n")
                 .filter { $0.hasPrefix(target.directory.string) }
                 .map { "// \($0)" }
@@ -54,32 +81,24 @@ struct PeripheryPlugin: CommandPlugin {
             try string.data(using: .utf8)?.write(to: URL(fileURLWithPath: path.appending("PeripheryRenderer.swift").string))
         }
 
-        if output.contains("error:") {
-            Diagnostics.error(output)
+        if output.error.contains("error:") {
+            Diagnostics.error(output.error)
         } else {
-            Diagnostics.remark(output)
+            Diagnostics.remark(output.result)
         }
     }
-}
 
-private extension PluginContext {
-    @discardableResult
-    func exec(tool: String, argumentsHandler: (inout [CustomStringConvertible]) -> Void) throws -> String {
-        let tool = try self.tool(named: tool)
-
-        var arguments: [CustomStringConvertible] = []
-        argumentsHandler(&arguments)
-
-        let pipe = Pipe()
-        let process = Process()
-        process.launchPath = tool.path.string
-        process.arguments = arguments.map(\.description)
-        process.standardOutput = pipe
-        process.standardError = pipe
-        try process.run()
-        process.waitUntilExit()
-
-        let data = try? pipe.fileHandleForReading.readToEnd()
-        return data.flatMap { String(data: $0, encoding: .utf8) } ?? ""
+    func performCommand(context: PluginContext, arguments: [String]) async throws {
+        try perform(context: context, arguments: arguments, isPackage: true)
     }
 }
+
+#if canImport(XcodeProjectPlugin)
+import XcodeProjectPlugin
+
+extension PeripheryPlugin: XcodeCommandPlugin {
+    func performCommand(context: XcodePluginContext, arguments: [String]) throws {
+        try perform(context: context, arguments: arguments, isPackage: false)
+    }
+}
+#endif

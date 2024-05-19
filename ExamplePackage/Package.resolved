@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/rock88/periphery.git",
       "state" : {
-        "branch" : "plugin_support",
-        "revision" : "5869ecaecf1785451ca365afaa61d20f5ddbdbd7"
+        "branch" : "xcode_plugin_support",
+        "revision" : "1e1db483e9a395afdb10c5c5dfd3570e3b46d3d7"
       }
     },
     {

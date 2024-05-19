@@ -9,7 +9,7 @@ let package = Package(
         .plugin(name: "PeripheryRendererPlugin", targets: ["PeripheryRendererPlugin"])
     ],
     dependencies: [
-        .package(url: "https://github.com/rock88/periphery.git", branch: "plugin_support")
+        .package(url: "https://github.com/rock88/periphery.git", branch: "xcode_plugin_support")
     ],
     targets: [
         // PeripheryPlugin
