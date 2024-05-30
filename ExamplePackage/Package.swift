@@ -14,7 +14,7 @@ let package = Package(
         .target(
             name: "Example",
             plugins: [
-                .plugin(name: "PeripheryRendererPlugin", package: "PeripheryPlugin")
+                .plugin(name: "PeripheryPlugin", package: "PeripheryPlugin")
             ]
         )
     ]

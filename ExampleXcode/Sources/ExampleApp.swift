@@ -12,6 +12,12 @@ struct ExampleApp: App {
     }
 }
 
+public func test() {
+    _ = UnusedProperty(title: "title")
+    _ = CodableItem(title: "title")
+    print("test")
+}
+
 func unusedFunction() {
     //
 }
@@ -25,5 +31,9 @@ struct UnusedStruct {
 }
 
 struct UnusedProperty {
+    let title: String
+}
+
+struct CodableItem: Codable {
     let title: String
 }

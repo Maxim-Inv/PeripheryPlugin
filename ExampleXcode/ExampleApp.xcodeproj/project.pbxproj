@@ -173,7 +173,7 @@
 /* Begin PBXTargetDependency section */
 		103B563669C46B0F1267F9E8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			productRef = 5B9F4DDAF437168222FB2644 /* PeripheryRendererPlugin */;
+			productRef = 870D12B02DD292125A4D0181 /* PeripheryPlugin */;
 		};
 /* End PBXTargetDependency section */
 
@@ -362,9 +362,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		5B9F4DDAF437168222FB2644 /* PeripheryRendererPlugin */ = {
+		870D12B02DD292125A4D0181 /* PeripheryPlugin */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = "plugin:PeripheryRendererPlugin";
+			productName = "plugin:PeripheryPlugin";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

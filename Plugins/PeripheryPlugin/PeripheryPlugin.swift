@@ -2,103 +2,42 @@ import Foundation
 import PackagePlugin
 
 @main
-struct PeripheryPlugin: CommandPlugin {
-    func perform(context: AnyPluginContext, arguments: [String], isPackage: Bool) throws {
-        var extractor = ArgumentExtractor(arguments)
+struct PeripheryPlugin: BuildToolPlugin {
+    func createCommand(context: AnyContext, target: AnyTarget) throws -> Command? {
+        let sources = target.files
+            .sourceFiles
 
-        let names = extractor.extractOption(named: "target")
-        let targets = try context.targets(named: names)
+        guard !sources.isEmpty else { return nil }
 
-        guard !targets.isEmpty else { return }
+        let tool = try context.tool(named: "PeripheryRenderer").path
+        let path = context.pluginWorkDirectory.appending("PeripheryRenderer.swift")
 
-        let manifestPath = context.pluginWorkDirectory.appending("PeripheryPlugin_Manifest.json")
-
-        if isPackage {
-            let manifest = try context.exec(tool: "swift") { arguments in
-                arguments.append("package")
-                arguments.append("describe")
-                arguments.append("--type")
-                arguments.append("json")
-            }
-
-            guard !manifest.result.isEmpty else {
-                Diagnostics.error("Failed to perform `swift package describe`, try to restart Xcode")
-                return
-            }
-
-            try manifest.result.write(toFile: manifestPath.string, atomically: true, encoding: .utf8)
-        }
-
-        let dataStore = context.pluginWorkDirectory
-            .removingLastComponent()
-            .removingLastComponent()
-            .removingLastComponent()
-            .appending("Index.noindex", "DataStore")
-
-        let output = try context.exec(tool: "periphery") { arguments in
-            arguments.append("scan")
-
-            if isPackage {
-                arguments.append("--json-package-manifest-path")
-                arguments.append(manifestPath)
-            } else {
-                arguments.append("--project")
-                arguments.append(context.directory.appending(context.displayName + ".xcodeproj"))
-                arguments.append("--schemes")
-                arguments.append(contentsOf: names)
-                arguments.append("--skip-schemes-validation")
-            }
-
-            arguments.append("--targets")
-            arguments.append(contentsOf: names)
-            arguments.append("--skip-build")
-            arguments.append("--index-store-path")
-            arguments.append(dataStore)
-            arguments.append("--format")
-            arguments.append("xcode")
-
-            // Configuration
-            arguments.append("--retain-public")
-            arguments.append("--disable-redundant-public-analysis")
-        }
-
-        for target in targets {
-            let path = context.pluginWorkDirectory.removingLastComponent().appending(
-                context.id + ".output",
-                target.name,
-                "PeripheryRendererPlugin"
-            )
-
-            try FileManager.default.createDirectory(atPath: path.string, withIntermediateDirectories: true)
-
-            let string = output
-                .result
-                .components(separatedBy: "\n")
-                .filter { $0.hasPrefix(target.directory.string) }
-                .map { "// \($0)" }
-                .joined(separator: "\n")
-
-            try string.data(using: .utf8)?.write(to: URL(fileURLWithPath: path.appending("PeripheryRenderer.swift").string))
-        }
-
-        if output.error.contains("error:") {
-            Diagnostics.error(output.error)
-        } else {
-            Diagnostics.remark(output.result)
-        }
+        return .buildCommand(
+            displayName: "PeripheryPlugin",
+            executable: tool,
+            arguments: [path],
+            inputFiles: sources,
+            outputFiles: [path]
+        )
     }
 
-    func performCommand(context: PluginContext, arguments: [String]) async throws {
-        try perform(context: context, arguments: arguments, isPackage: true)
+    func createBuildCommands(context: PluginContext, target: Target) async throws -> [Command] {
+        if let target = AnyTarget(target: target), let command = try createCommand(context: context, target: target) {
+            return [command]
+        }
+        return []
     }
 }
 
 #if canImport(XcodeProjectPlugin)
 import XcodeProjectPlugin
 
-extension PeripheryPlugin: XcodeCommandPlugin {
-    func performCommand(context: XcodePluginContext, arguments: [String]) throws {
-        try perform(context: context, arguments: arguments, isPackage: false)
+extension PeripheryPlugin: XcodeBuildToolPlugin {
+    func createBuildCommands(context: XcodePluginContext, target: XcodeTarget) throws -> [Command] {
+        if let command = try createCommand(context: context, target: AnyTarget(context: context, target: target)) {
+            return [command]
+        }
+        return []
     }
 }
 #endif

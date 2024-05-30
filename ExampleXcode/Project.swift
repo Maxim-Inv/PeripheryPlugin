@@ -14,7 +14,7 @@ let project = Project(
             deploymentTargets: .macOS("13.0"),
             sources: "Sources/**",
             dependencies: [
-                .package(product: "PeripheryRendererPlugin", type: .plugin)
+                .package(product: "PeripheryPlugin", type: .plugin)
             ]
         )
     ]

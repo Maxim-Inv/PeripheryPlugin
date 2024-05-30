@@ -5,28 +5,40 @@ import PackageDescription
 let package = Package(
     name: "PeripheryPlugin",
     products: [
-        .plugin(name: "PeripheryPlugin", targets: ["PeripheryPlugin"]),
-        .plugin(name: "PeripheryRendererPlugin", targets: ["PeripheryRendererPlugin"])
-    ],
-    dependencies: [
-        .package(url: "https://github.com/rock88/periphery.git", branch: "xcode_plugin_support")
+        .plugin(name: "Periphery", targets: ["Periphery"]),
+        .plugin(name: "Periphery (Clean)", targets: ["Periphery (Clean)"]),
+        .plugin(name: "PeripheryPlugin", targets: ["PeripheryPlugin"])
     ],
     targets: [
-        // PeripheryPlugin
+        // Periphery
+        // https://github.com/peripheryapp/periphery/releases
+        .binaryTarget(
+            name: "PeripheryBinary",
+            url: "https://github.com/peripheryapp/periphery/releases/download/2.19.0/periphery-2.19.0.artifactbundle.zip",
+            checksum: "0b9a8ced53c6aadcfd61849a3823ce689de81682d75bc8627abb53f1478853a4"
+        ),
         .plugin(
-            name: "PeripheryPlugin",
+            name: "Periphery",
             capability: .command(
                 intent: .custom(verb: "periphery", description: "A tool to identify unused code in Swift projects"),
                 permissions: []
             ),
             dependencies: [
-                "periphery"
+                "PeripheryBinary"
             ]
         ),
-        // PeripheryRenderer
+        .plugin(
+            name: "Periphery (Clean)",
+            capability: .command(
+                intent: .custom(verb: "periphery_clean", description: "Clean Periphery cache"),
+                permissions: []
+            ),
+            path: "Plugins/PeripheryClean"
+        ),
+        // PeripheryPlugin
         .executableTarget(name: "PeripheryRenderer"),
         .plugin(
-            name: "PeripheryRendererPlugin",
+            name: "PeripheryPlugin",
             capability: .buildTool,
             dependencies: [
                 "PeripheryRenderer"
