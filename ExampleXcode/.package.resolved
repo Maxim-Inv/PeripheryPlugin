@@ -1,0 +1,15 @@
+{
+  "originHash" : "6e74ba0dfe6bc488f706758d713eed4deeff91973164be91631fdd34ddb57fc4",
+  "pins" : [
+    {
+      "identity" : "peripheryplugin",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/rock88/PeripheryPlugin",
+      "state" : {
+        "revision" : "02ebcd84e8a5718c7396030ea9817842411dc176",
+        "version" : "1.0.0"
+      }
+    }
+  ],
+  "version" : 3
+}

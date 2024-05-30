@@ -26,7 +26,6 @@
 /* Begin PBXFileReference section */
 		1E82190F9C820BC4869A614F /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		50077EDD0AD81E915631E38E /* App-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "App-Info.plist"; sourceTree = "<group>"; };
-		6AE518BD308D35CF66AB1944 /* PeripheryPlugin */ = {isa = PBXFileReference; lastKnownFileType = folder; name = PeripheryPlugin; path = ..; sourceTree = "<group>"; };
 		791D4726C05FFBCD14FBC7B5 /* ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleApp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -73,20 +72,11 @@
 			path = Sources;
 			sourceTree = "<group>";
 		};
-		E5988D9AE80AB7E96D0259F6 /* Packages */ = {
-			isa = PBXGroup;
-			children = (
-				6AE518BD308D35CF66AB1944 /* PeripheryPlugin */,
-			);
-			name = Packages;
-			sourceTree = "<group>";
-		};
 		ECA11DCDB4BE2265B358A0E2 = {
 			isa = PBXGroup;
 			children = (
 				FBF92016366324490A3945BD /* Project */,
 				AF4E1C376012F79EC7DF8379 /* Products */,
-				E5988D9AE80AB7E96D0259F6 /* Packages */,
 			);
 			sourceTree = "<group>";
 		};
@@ -140,6 +130,9 @@
 				en,
 			);
 			mainGroup = ECA11DCDB4BE2265B358A0E2;
+			packageReferences = (
+				50D80D0338EAE34B52C825EE /* XCRemoteSwiftPackageReference "PeripheryPlugin" */,
+			);
 			productRefGroup = AF4E1C376012F79EC7DF8379 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -360,6 +353,17 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		50D80D0338EAE34B52C825EE /* XCRemoteSwiftPackageReference "PeripheryPlugin" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/rock88/PeripheryPlugin";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		870D12B02DD292125A4D0181 /* PeripheryPlugin */ = {

@@ -3,7 +3,8 @@ import ProjectDescription
 let project = Project(
     name: "ExampleApp",
     packages: [
-        .package(path: "..")
+        // .package(path: "..")
+        .package(url: "https://github.com/rock88/PeripheryPlugin", from: "1.0.0")
     ],
     targets: [
         .target(

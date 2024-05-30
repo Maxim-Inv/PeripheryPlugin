@@ -8,7 +8,8 @@ let package = Package(
         .library(name: "Example", targets: ["Example"])
     ],
     dependencies: [
-        .package(path: "..")
+        // .package(path: "..")
+        .package(url: "https://github.com/rock88/PeripheryPlugin", from: "1.0.0")
     ],
     targets: [
         .target(
