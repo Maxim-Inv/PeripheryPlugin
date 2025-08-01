@@ -14,7 +14,7 @@ let package = Package(
         // https://github.com/peripheryapp/periphery/releases
         .binaryTarget(
             name: "PeripheryBinary",
-            url: "https://github.com/peripheryapp/periphery/releases/download/2.19.0/periphery-2.19.0.artifactbundle.zip",
+            url: "https://github.com/peripheryapp/periphery/releases/download/3.2.0/periphery-3.2.0.artifactbundle.zip",
             checksum: "0b9a8ced53c6aadcfd61849a3823ce689de81682d75bc8627abb53f1478853a4"
         ),
         .plugin(
